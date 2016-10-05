@@ -13,8 +13,9 @@ public:
     QuaternionSocket(QObject* parent = 0);
     QQuaternion* receiveQuaternion();
 
-    bool hasPendingDatagrams() const;
 private:
+    void receivePrintQuaternions();
+
     QUdpSocket* m_socket;
 };
 
