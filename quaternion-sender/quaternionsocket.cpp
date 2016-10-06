@@ -4,7 +4,7 @@
 #include <QTimer>
 #include <QDebug>
 #include <capnp/message.h>
-#include <capnp/serialize-packed.h>
+#include <capnp/serialize.h>
 #include "quaternion.capnp.h"
 
 using ::capnp::word;
@@ -41,13 +41,11 @@ void QuaternionSocket::sendQuaternion(/*const QQuaternion* qquaternion*/)
     L3::Quaternion::Reader qreader(quaternion.asReader());
     uint64_t size = qreader.totalSize().wordCount+1;
 
-    WordArray array = ::kj::heapArray<word>(size);
-    memset(array.begin(), 0, size*sizeof(word));
-
-    ::capnp::copyToUnchecked(quaternion.asReader(), array.asPtr());
+    WordArray array = ::capnp::messageToFlatArray(message);
     QByteArray messageBuffer((char*)array.begin(), size*sizeof(word));
-
     m_socket->writeDatagram(messageBuffer, QHostAddress::LocalHost, 31234);
+
     //::capnp::writePackedMessageToFd(m_socket->socketDescriptor(), message);
+
     qDebug() << "Sent quaternion";
 }
