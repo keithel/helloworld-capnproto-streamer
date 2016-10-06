@@ -16,7 +16,8 @@ QuaternionSocket::QuaternionSocket(QObject* parent)
     , m_sendTimer(new QTimer(this))
 {
     connect(m_sendTimer, &QTimer::timeout, this, &QuaternionSocket::sendQuaternion);
-    m_sendTimer->start(1000);
+    m_sendTimer->setTimerType(Qt::PreciseTimer);
+    m_sendTimer->start(17); // this works out to ~58.82352941176 Hz
 }
 
 void QuaternionSocket::sendQuaternion(/*const QQuaternion* qquaternion*/)
@@ -46,6 +47,4 @@ void QuaternionSocket::sendQuaternion(/*const QQuaternion* qquaternion*/)
     m_socket->writeDatagram(messageBuffer, QHostAddress::LocalHost, 31234);
 
     //::capnp::writePackedMessageToFd(m_socket->socketDescriptor(), message);
-
-    qDebug() << "Sent quaternion";
 }
