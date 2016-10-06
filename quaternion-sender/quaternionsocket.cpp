@@ -15,8 +15,6 @@ QuaternionSocket::QuaternionSocket(QObject* parent)
     , m_socket(new QUdpSocket(this))
     , m_sendTimer(new QTimer(this))
 {
-    //m_socket->bind(QHostAddress::LocalHost, 31234);
-    //m_socket->connectToHost(QHostAddress::LocalHost, 31234, QAbstractSocket::WriteOnly);
     connect(m_sendTimer, &QTimer::timeout, this, &QuaternionSocket::sendQuaternion);
     m_sendTimer->start(1000);
 }
