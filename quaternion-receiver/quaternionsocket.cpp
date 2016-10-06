@@ -5,7 +5,7 @@
 #include <capnp/serialize-packed.h>
 #include "quaternion.capnp.h"
 #include <QDebug>
-#include <QDateTime>
+#include <QtConcurrent/QtConcurrent>
 #include <memory>
 
 using ::capnp::word;
@@ -32,12 +32,13 @@ void QuaternionSocket::receiveQuaternions()
         QByteArray buffer(m_socket->pendingDatagramSize(), (char)0);
         m_socket->readDatagram(buffer.data(), buffer.size());
 
-        L3::Quaternion::Reader q = ::capnp::readMessageUnchecked<L3::Quaternion>((const word*)buffer.data());
-
         //::capnp::PackedFdMessageReader message(m_socket->socketDescriptor());
         //L3::Quaternion::Reader q = message.getRoot<L3::Quaternion>();
 
-        m_qcache.append(QQuaternion(q.getScalar(), q.getXpos(), q.getYpos(), q.getZpos()));
+        QtConcurrent::run([=] {
+            L3::Quaternion::Reader q = ::capnp::readMessageUnchecked<L3::Quaternion>((const word*)buffer.data());
+            m_qcache.append(QQuaternion(q.getScalar(), q.getXpos(), q.getYpos(), q.getZpos()));
+        });
         m_nPerSecCounter++;
     }
 }
