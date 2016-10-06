@@ -4,7 +4,6 @@
 #include <QObject>
 
 class QUdpSocket;
-class QTimer;
 
 class QuaternionSocket : public QObject
 {

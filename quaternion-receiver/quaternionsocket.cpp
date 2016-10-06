@@ -1,7 +1,6 @@
 #include "quaternionsocket.h"
 #include <QUdpSocket>
 #include <QQuaternion>
-#include <QTimer>
 #include <capnp/message.h>
 #include <capnp/serialize-packed.h>
 #include "quaternion.capnp.h"
