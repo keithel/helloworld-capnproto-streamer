@@ -13,3 +13,5 @@ HEADERS += \
 
 SOURCES += main.cpp \
     quaternionsocket.cpp
+
+LIBS += -lkj

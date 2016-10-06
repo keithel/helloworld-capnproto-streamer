@@ -5,4 +5,4 @@ include(capnproto.pri)
 CAPNP_SCHEMAS += \
     $$PWD/quaternion.capnp
 
-LIBS += -lcapnp -lkj
+LIBS += -lcapnp
