@@ -13,7 +13,7 @@ public:
     QuaternionSocket(QObject* parent = 0);
 
 public slots:
-    void sendQuaternion(/*const QQuaternion* qquaternion = nullptr*/);
+    void sendQuaternion();
 
 private:
     QUdpSocket* m_socket;

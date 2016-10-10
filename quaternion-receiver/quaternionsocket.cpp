@@ -2,7 +2,6 @@
 #include <QUdpSocket>
 #include <QQuaternion>
 #include <capnp/message.h>
-#include <capnp/serialize-packed.h>
 #include "quaternion.capnp.h"
 #include <QDebug>
 #include <QtConcurrent/QtConcurrent>
