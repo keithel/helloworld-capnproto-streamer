@@ -5,6 +5,7 @@
 #include <QContiguousCache>
 #include <QQuaternion>
 #include <QTimer>
+#include <QHostAddress>
 
 class QUdpSocket;
 
@@ -13,6 +14,13 @@ class QuaternionSocket : public QObject
 Q_OBJECT
 public:
     QuaternionSocket(QObject* parent = 0);
+    virtual ~QuaternionSocket();
+
+    bool bind(QHostAddress address, quint16 port);
+
+public slots:
+    void close();
+    void printRate();
 
 private:
     void receiveQuaternions();

@@ -18,10 +18,64 @@ QuaternionSocket::QuaternionSocket(QObject* parent)
     , m_perSecTimer(new QTimer(this))
     , m_qcache(500)
 {
-    m_socket->bind(QHostAddress::LocalHost, 31234);
-    connect(m_socket, &QUdpSocket::readyRead, this, &QuaternionSocket::receiveQuaternions);
-    connect(m_perSecTimer, &QTimer::timeout, [=] { qDebug() << (m_lastNPerSec = m_nPerSecCounter) << "quaternions/sec"; m_nPerSecCounter = 0; });
-    m_perSecTimer->start(1000);
+}
+
+QuaternionSocket::~QuaternionSocket()
+{
+    close();
+}
+
+bool QuaternionSocket::bind(QHostAddress address, quint16 port)
+{
+    if (address.isNull())
+        return false;
+
+    if (m_socket->state() == QAbstractSocket::ConnectingState
+        || m_socket->state() == QAbstractSocket::ConnectedState)
+    {
+        m_socket->disconnectFromHost();
+    }
+    if (m_socket->state() == QAbstractSocket::BoundState)
+    {
+        m_socket->close();
+    }
+
+    if (!m_socket->bind(address, port))
+        return false;
+
+    if (!m_perSecTimer->isActive())
+    {
+        connect(m_socket, &QUdpSocket::readyRead, this, &QuaternionSocket::receiveQuaternions);
+        connect(m_perSecTimer, &QTimer::timeout, this, &QuaternionSocket::printRate);
+        m_perSecTimer->start(1000);
+    }
+
+    return true;
+}
+
+void QuaternionSocket::close()
+{
+    if (m_socket->state() == QAbstractSocket::ConnectingState
+        || m_socket->state() == QAbstractSocket::ConnectedState)
+    {
+        m_socket->disconnectFromHost();
+    }
+    if (m_socket->state() == QAbstractSocket::BoundState)
+    {
+        m_socket->close();
+    }
+
+    if (m_perSecTimer->isActive())
+    {
+        m_perSecTimer->stop();
+        disconnect(m_perSecTimer, &QTimer::timeout, this, &QuaternionSocket::printRate);
+        disconnect(m_socket, &QUdpSocket::readyRead, this, &QuaternionSocket::receiveQuaternions);
+    }
+}
+
+void QuaternionSocket::printRate()
+{
+    qDebug() << (m_lastNPerSec = m_nPerSecCounter) << "quaternions/sec"; m_nPerSecCounter = 0;
 }
 
 void QuaternionSocket::receiveQuaternions()
