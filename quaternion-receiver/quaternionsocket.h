@@ -18,18 +18,19 @@ public:
 
     bool bind(QHostAddress address, quint16 port, QHostAddress multicastGroup = QHostAddress());
 
+signals:
+    void rateChanged(unsigned int rateHz);
+
 public slots:
     void close();
-    void printRate();
+    void updateRate();
 
 private:
     void receiveQuaternions();
-    QChar printTicker();
 
 private:
     unsigned int m_nPerSecCounter;
     unsigned int m_lastNPerSec;
-    quint32 m_nPrinted;
 
     QHostAddress m_multicastGroup;
     QUdpSocket* m_socket;

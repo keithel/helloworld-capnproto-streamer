@@ -3,20 +3,14 @@
 #include <QQuaternion>
 #include <capnp/message.h>
 #include "quaternion.capnp.h"
-#include <QDebug>
 #include <QtConcurrent/QtConcurrent>
-#include <memory>
-#include <QStringBuilder>
-#include <stdio.h>
 
 using ::capnp::word;
-using std::unique_ptr;
 
 QuaternionSocket::QuaternionSocket(QObject* parent)
     : QObject(parent)
     , m_nPerSecCounter(0)
     , m_lastNPerSec(0)
-    , m_nPrinted(0)
     , m_socket(new QUdpSocket(this))
     , m_perSecTimer(new QTimer(this))
     , m_qcache(500)
@@ -55,7 +49,7 @@ bool QuaternionSocket::bind(QHostAddress address, quint16 port, QHostAddress mul
     if (!m_perSecTimer->isActive())
     {
         connect(m_socket, &QUdpSocket::readyRead, this, &QuaternionSocket::receiveQuaternions);
-        connect(m_perSecTimer, &QTimer::timeout, this, &QuaternionSocket::printRate);
+        connect(m_perSecTimer, &QTimer::timeout, this, &QuaternionSocket::updateRate);
         m_perSecTimer->start(1000);
     }
 
@@ -83,33 +77,19 @@ void QuaternionSocket::close()
     if (m_perSecTimer->isActive())
     {
         m_perSecTimer->stop();
-        disconnect(m_perSecTimer, &QTimer::timeout, this, &QuaternionSocket::printRate);
+        disconnect(m_perSecTimer, &QTimer::timeout, this, &QuaternionSocket::updateRate);
         disconnect(m_socket, &QUdpSocket::readyRead, this, &QuaternionSocket::receiveQuaternions);
     }
 }
 
-QChar QuaternionSocket::printTicker()
+void QuaternionSocket::updateRate()
 {
-    switch(m_nPrinted % 4)
+    if (m_nPerSecCounter != m_lastNPerSec)
     {
-    case 0:
-        return QChar::fromLatin1('/'); break;
-    case 1:
-        return QChar::fromLatin1('-'); break;
-    case 2:
-        return QChar::fromLatin1('\\'); break;
-    default:
-        return QChar::fromLatin1('|'); break;
+        m_lastNPerSec = m_nPerSecCounter;
+        emit rateChanged(m_lastNPerSec);
     }
-}
-
-void QuaternionSocket::printRate()
-{
-    QTextStream out(stdout, QIODevice::WriteOnly);
-    out << "\r" % printTicker() % " " % QString::number(m_lastNPerSec = m_nPerSecCounter) % " quaternions/sec  \b\b";
-    out.flush();
     m_nPerSecCounter = 0;
-    m_nPrinted++;
 }
 
 void QuaternionSocket::receiveQuaternions()
