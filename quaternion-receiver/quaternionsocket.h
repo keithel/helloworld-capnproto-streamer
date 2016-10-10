@@ -24,10 +24,12 @@ public slots:
 
 private:
     void receiveQuaternions();
+    QChar printTicker();
 
 private:
     unsigned int m_nPerSecCounter;
     unsigned int m_lastNPerSec;
+    quint32 m_nPrinted;
 
     QHostAddress m_multicastGroup;
     QUdpSocket* m_socket;

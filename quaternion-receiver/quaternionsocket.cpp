@@ -6,6 +6,8 @@
 #include <QDebug>
 #include <QtConcurrent/QtConcurrent>
 #include <memory>
+#include <QStringBuilder>
+#include <stdio.h>
 
 using ::capnp::word;
 using std::unique_ptr;
@@ -14,6 +16,7 @@ QuaternionSocket::QuaternionSocket(QObject* parent)
     : QObject(parent)
     , m_nPerSecCounter(0)
     , m_lastNPerSec(0)
+    , m_nPrinted(0)
     , m_socket(new QUdpSocket(this))
     , m_perSecTimer(new QTimer(this))
     , m_qcache(500)
@@ -85,9 +88,28 @@ void QuaternionSocket::close()
     }
 }
 
+QChar QuaternionSocket::printTicker()
+{
+    switch(m_nPrinted % 4)
+    {
+    case 0:
+        return QChar::fromLatin1('/'); break;
+    case 1:
+        return QChar::fromLatin1('-'); break;
+    case 2:
+        return QChar::fromLatin1('\\'); break;
+    default:
+        return QChar::fromLatin1('|'); break;
+    }
+}
+
 void QuaternionSocket::printRate()
 {
-    qDebug() << (m_lastNPerSec = m_nPerSecCounter) << "quaternions/sec"; m_nPerSecCounter = 0;
+    QTextStream out(stdout, QIODevice::WriteOnly);
+    out << "\r" % printTicker() % " " % QString::number(m_lastNPerSec = m_nPerSecCounter) % " quaternions/sec  \b\b";
+    out.flush();
+    m_nPerSecCounter = 0;
+    m_nPrinted++;
 }
 
 void QuaternionSocket::receiveQuaternions()
