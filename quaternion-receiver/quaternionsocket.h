@@ -16,7 +16,7 @@ public:
     QuaternionSocket(QObject* parent = 0);
     virtual ~QuaternionSocket();
 
-    bool bind(QHostAddress address, quint16 port);
+    bool bind(QHostAddress address, quint16 port, QHostAddress multicastGroup = QHostAddress());
 
 public slots:
     void close();
@@ -29,6 +29,7 @@ private:
     unsigned int m_nPerSecCounter;
     unsigned int m_lastNPerSec;
 
+    QHostAddress m_multicastGroup;
     QUdpSocket* m_socket;
     QTimer* m_perSecTimer;
     QContiguousCache<QQuaternion> m_qcache;

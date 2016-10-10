@@ -25,7 +25,7 @@ QuaternionSocket::~QuaternionSocket()
     close();
 }
 
-bool QuaternionSocket::bind(QHostAddress address, quint16 port)
+bool QuaternionSocket::bind(QHostAddress address, quint16 port, QHostAddress multicastGroup)
 {
     if (address.isNull())
         return false;
@@ -43,6 +43,12 @@ bool QuaternionSocket::bind(QHostAddress address, quint16 port)
     if (!m_socket->bind(address, port))
         return false;
 
+    if (!multicastGroup.isNull())
+    {
+        m_socket->joinMulticastGroup(multicastGroup);
+        m_multicastGroup = multicastGroup;
+    }
+
     if (!m_perSecTimer->isActive())
     {
         connect(m_socket, &QUdpSocket::readyRead, this, &QuaternionSocket::receiveQuaternions);
@@ -55,6 +61,12 @@ bool QuaternionSocket::bind(QHostAddress address, quint16 port)
 
 void QuaternionSocket::close()
 {
+    if (!m_multicastGroup.isNull())
+    {
+        m_socket->leaveMulticastGroup(m_multicastGroup);
+        m_multicastGroup.clear();
+    }
+
     if (m_socket->state() == QAbstractSocket::ConnectingState
         || m_socket->state() == QAbstractSocket::ConnectedState)
     {

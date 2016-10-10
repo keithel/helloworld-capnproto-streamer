@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 
     QuaternionSocket mySocket(&app);
-    mySocket.bind(QHostAddress::LocalHost, 11212);
+    mySocket.bind(QHostAddress::AnyIPv4, 11212, QHostAddress("233.253.12.1"));
 
     return app.exec();
 }
