@@ -44,6 +44,14 @@ void QuaternionSocket::stop()
 
 void QuaternionSocket::sendQuaternion()
 {
+    static int msecsSinceLastSec = 0;
+    static quint64 totalNSent = 0;
+    if (msecsSinceLastSec >= 1000)
+    {
+        qDebug() << "Sent" << totalNSent << "quaternions";
+        msecsSinceLastSec = 0;
+    }
+
     ::capnp::MallocMessageBuilder message;
     L3::Quaternion::Builder quaternion = message.initRoot<L3::Quaternion>();
     quaternion.setScalar(qrand() % 10); // booogus values
@@ -57,4 +65,7 @@ void QuaternionSocket::sendQuaternion()
     WordArray array = ::capnp::messageToFlatArray(message);
     QByteArray messageBuffer((char*)array.begin(), size*sizeof(word));
     m_socket->writeDatagram(messageBuffer, m_dest, m_destPort);
+
+    msecsSinceLastSec += m_delayMsec;
+    totalNSent++;
 }
