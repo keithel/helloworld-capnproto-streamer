@@ -23,6 +23,7 @@ QuaternionSocket::~QuaternionSocket()
 
 bool QuaternionSocket::bind(QHostAddress address, quint16 port, QHostAddress multicastGroup)
 {
+    qDebug() << "start binding";
     if (address.isNull())
         return false;
 
@@ -31,27 +32,37 @@ bool QuaternionSocket::bind(QHostAddress address, quint16 port, QHostAddress mul
     {
         m_socket->disconnectFromHost();
     }
+    qDebug() << "binding disconnect if connected done";
     if (m_socket->state() == QAbstractSocket::BoundState)
     {
         m_socket->close();
     }
 
+    qDebug() << "binding close if already bound";
     if (!m_socket->bind(address, port))
+    {
+        qDebug() << "binding failed.";
         return false;
+    }
 
     if (!multicastGroup.isNull())
     {
         m_socket->joinMulticastGroup(multicastGroup);
         m_multicastGroup = multicastGroup;
+        qDebug() << "binding joined multicast group" << multicastGroup.toString();
     }
 
+    bool receiveQuatsConnected = true;
+    bool updateRateConnected = true;
     if (!m_perSecTimer->isActive())
     {
-        connect(m_socket, &QUdpSocket::readyRead, this, &QuaternionSocket::receiveQuaternions);
-        connect(m_perSecTimer, &QTimer::timeout, this, &QuaternionSocket::updateRate);
+        receiveQuatsConnected = connect(m_socket, &QUdpSocket::readyRead, this, &QuaternionSocket::receiveQuaternions);
+        updateRateConnected = connect(m_perSecTimer, &QTimer::timeout, this, &QuaternionSocket::updateRate);
         m_perSecTimer->start(1000);
     }
 
+    qDebug() << "Socket bound. receiveQuaternions" << qPrintable(QString(receiveQuatsConnected ? "" : "not") + "connected,")
+             << "updateRate" << qPrintable(QString(updateRateConnected ? "" : "not") + "connected.");
     return true;
 }
 
