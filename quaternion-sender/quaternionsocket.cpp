@@ -46,9 +46,10 @@ void QuaternionSocket::sendQuaternion()
 {
     static int msecsSinceLastSec = 0;
     static quint64 totalNSent = 0;
+    static quint64 lastnBytesSent = 0;
     if (msecsSinceLastSec >= 1000)
     {
-        qDebug() << "Sent" << totalNSent << "quaternions";
+        qDebug() << "Sent" << totalNSent << "quaternions, lastnBytesSent" << lastnBytesSent;
         msecsSinceLastSec = 0;
     }
 
@@ -64,7 +65,7 @@ void QuaternionSocket::sendQuaternion()
 
     WordArray array = ::capnp::messageToFlatArray(message);
     QByteArray messageBuffer((char*)array.begin(), size*sizeof(word));
-    m_socket->writeDatagram(messageBuffer, m_dest, m_destPort);
+    lastnBytesSent = m_socket->writeDatagram(messageBuffer, m_dest, m_destPort);
 
     msecsSinceLastSec += m_delayMsec;
     totalNSent++;
