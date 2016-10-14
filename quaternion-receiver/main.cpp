@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 #endif
 
     QuaternionSocket mySocket(&app);
-    mySocket.bind(QHostAddress::AnyIPv4, 11212, QHostAddress("233.253.12.1"));
+    mySocket.bind(QHostAddress::AnyIPv4, 11212);
     app.connect(&mySocket, &QuaternionSocket::rateChanged, printRate);
 
     return app.exec();
