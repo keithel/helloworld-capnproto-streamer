@@ -1,4 +1,12 @@
-QT += qml quick network
+QT += network concurrent
+qtHaveModule(gui) {
+    QT += qml quick
+}
+else {
+    QT += core
+    QT -= gui
+}
+
 CONFIG += c++11
 TARGET = quaternion-receiver
 
@@ -10,10 +18,12 @@ HEADERS += \
 SOURCES += main.cpp \
     quaternionsocket.cpp
 
-RESOURCES += qml.qrc
+qtHaveModule(gui) {
+    RESOURCES += qml.qrc
 
-# Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH =
+    # Additional import path used to resolve QML modules in Qt Creator's code model
+    QML_IMPORT_PATH =
+}
 
 # Default rules for deployment.
 include(deployment.pri)

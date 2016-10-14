@@ -1,5 +1,10 @@
+#if defined(QT_GUI_LIB)
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#else
+#include <QCoreApplication>
+#endif
+
 #include "quaternionsocket.h"
 #include <QHostAddress>
 #include <QTextStream>
@@ -33,10 +38,14 @@ void printRate(unsigned int rateHz)
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#if defined(QT_GUI_LIB)
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
+#else
+    QCoreApplication app(argc, argv);
+#endif
 
     QuaternionSocket mySocket(&app);
     mySocket.bind(QHostAddress::AnyIPv4, 11212, QHostAddress("233.253.12.1"));

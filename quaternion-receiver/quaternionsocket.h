@@ -3,11 +3,22 @@
 
 #include <QObject>
 #include <QContiguousCache>
-#include <QQuaternion>
 #include <QTimer>
 #include <QHostAddress>
 
 class QUdpSocket;
+
+class MyQuaternion {
+public:
+    MyQuaternion(float scalar, float xPos, float yPos, float zPos)
+        : m_scalar(scalar), m_xPos(xPos), m_yPos(yPos), m_zPos(zPos) {}
+
+public:
+    float m_scalar;
+    float m_xPos;
+    float m_yPos;
+    float m_zPos;
+};
 
 class QuaternionSocket : public QObject
 {
@@ -35,7 +46,7 @@ private:
     QHostAddress m_multicastGroup;
     QUdpSocket* m_socket;
     QTimer* m_perSecTimer;
-    QContiguousCache<QQuaternion> m_qcache;
+    QContiguousCache<MyQuaternion> m_qcache;
 };
 
 #endif // QUATERNIONSOCKET_H
