@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 
     QuaternionSocket mySocket;
     mySocket.setRate(60);
-    mySocket.setDestination(QHostAddress::LocalHost, 11212);
+    mySocket.setDestination(QHostAddress("192.168.1.203"), 11212);
     mySocket.start();
 
     return a.exec();
