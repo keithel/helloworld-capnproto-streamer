@@ -1,4 +1,4 @@
-QT += core network
+QT += core
 QT -= gui
 
 CONFIG += console c++11
@@ -9,8 +9,6 @@ TARGET = quaternion-sender
 
 include(../quaternion-streamer.pri)
 
-HEADERS += \
-    quaternionsocket.h
+HEADERS +=
 
-SOURCES += main.cpp \
-    quaternionsocket.cpp
+SOURCES += main.cpp
