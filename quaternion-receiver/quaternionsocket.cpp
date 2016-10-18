@@ -93,8 +93,10 @@ void QuaternionSocket::updateRate()
 
 void QuaternionSocket::receiveQuaternions()
 {
-    while(m_socket->hasPendingDatagrams())
+    while(m_socket->pendingDatagramSize() > 0)
     {
+        if (!m_socket->hasPendingDatagrams())
+            qWarning() << qPrintable("socket->hasPendingDatagrams() false but pendingDatagramSize nonzero (") << m_socket->pendingDatagramSize() << qPrintable(")");
         QByteArray buffer(m_socket->pendingDatagramSize(), (char)0);
         m_socket->readDatagram(buffer.data(), buffer.size());
 
