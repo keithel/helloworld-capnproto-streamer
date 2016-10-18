@@ -1,5 +1,5 @@
 QT += network concurrent
-qtHaveModule(gui) {
+!nogui:qtHaveModule(gui) {
     QT += qml quick
 }
 else {
@@ -18,7 +18,7 @@ HEADERS += \
 SOURCES += main.cpp \
     quaternionsocket.cpp
 
-qtHaveModule(gui) {
+!nogui:qtHaveModule(gui) {
     RESOURCES += qml.qrc
 
     # Additional import path used to resolve QML modules in Qt Creator's code model
