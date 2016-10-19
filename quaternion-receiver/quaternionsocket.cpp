@@ -1,6 +1,7 @@
 #include "quaternionsocket.h"
 #include <QUdpSocket>
 #include <capnp/message.h>
+#include <capnp/serialize.h>
 #include "quaternion.capnp.h"
 #include <QtConcurrent/QtConcurrent>
 
@@ -104,7 +105,8 @@ void QuaternionSocket::receiveQuaternions()
         //L3::Quaternion::Reader q = message.getRoot<L3::Quaternion>();
 
         QtConcurrent::run([=] {
-            L3::Quaternion::Reader q = ::capnp::readMessageUnchecked<L3::Quaternion>((const word*)buffer.data());
+            ::capnp::FlatArrayMessageReader reader(::kj::ArrayPtr<const word>((const word*)buffer.data(), buffer.size()));
+            L3::Quaternion::Reader q = reader.getRoot<L3::Quaternion>();
             m_qcache.append(MyQuaternion(q.getScalar(), q.getXpos(), q.getYpos(), q.getZpos()));
         });
         m_nPerSecCounter++;
