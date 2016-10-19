@@ -60,5 +60,15 @@ void QuaternionSocket::sendQuaternion()
 
     WordArray array = ::capnp::messageToFlatArray(message);
     QByteArray messageBuffer((char*)array.begin(), size*sizeof(word));
-    m_socket->writeDatagram(messageBuffer, m_dest, m_destPort);
+    qint64 bytesSent = m_socket->writeDatagram(messageBuffer, m_dest, m_destPort);
+    if (bytesSent < 0)
+    {
+        qWarning() << qPrintable("Error sending datagram:") << m_socket->errorString();
+        return;
+    }
+    if (bytesSent != messageBuffer.size())
+    {
+        qWarning() << qPrintable("Partial send") << QString::number(bytesSent) + "/" + QString::number(messageBuffer.size()) << qPrintable("bytes sent");
+        return;
+    }
 }
