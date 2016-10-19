@@ -30,10 +30,6 @@ void QuaternionSocket::setDestination(QHostAddress dest, quint16 destPort)
 {
     m_dest = dest;
     m_destPort = destPort;
-    if (m_dest.isMulticast())
-    {
-        m_socket->joinMulticastGroup(m_dest);
-    }
 }
 
 void QuaternionSocket::start()
