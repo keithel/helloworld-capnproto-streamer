@@ -7,7 +7,8 @@
 #include "quaternion.capnp.h"
 
 using ::capnp::word;
-typedef ::kj::Array<::capnp::word> WordArray;
+using ::kj::ArrayPtr;
+typedef ::kj::Array<word> WordArray;
 
 QuaternionSocket::QuaternionSocket(QObject* parent)
     : QObject(parent)
@@ -51,11 +52,9 @@ void QuaternionSocket::sendQuaternion()
     quaternion.setYpos(qrand() % 100);
     quaternion.setZpos(qrand() % 100);
 
-    L3::Quaternion::Reader qreader(quaternion.asReader());
-    uint64_t size = qreader.totalSize().wordCount+1;
-
     WordArray array = ::capnp::messageToFlatArray(message);
-    QByteArray messageBuffer((char*)array.begin(), size*sizeof(word));
+    ArrayPtr<unsigned char> messageBytes(array.asBytes());
+    QByteArray messageBuffer((const char*)messageBytes.begin(), messageBytes.size());
     qint64 bytesSent = m_socket->writeDatagram(messageBuffer, m_dest, m_destPort);
     if (bytesSent < 0)
     {
