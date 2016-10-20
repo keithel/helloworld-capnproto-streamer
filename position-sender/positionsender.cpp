@@ -20,6 +20,26 @@ PositionSender::PositionSender(QObject* parent)
 {
     connect(m_sendTimer, &QTimer::timeout, this, &PositionSender::sendPosition);
     m_sendTimer->setTimerType(Qt::PreciseTimer);
+    initPositions();
+}
+
+void PositionSender::initPositions()
+{
+    for (int i = 0; i < 12; i = i + 11)
+    {
+        ::capnp::MallocMessageBuilder message;
+        L3::Position::Builder position = message.initRoot<L3::Position>();
+        position.setHeading(44 + i); // booogus values
+        position.setElevation(66 + i);
+        position.setLatitude(88 + i);
+        position.setLongitude(0+ i);
+        position.setHeightAboveEllipsoid(22 + i);
+
+        WordArray array = ::capnp::messageToFlatArray(message);
+        ArrayPtr<unsigned char> messageBytes(array.asBytes());
+        QByteArray messageBuffer((const char*)messageBytes.begin(), messageBytes.size());
+        m_positionBuffers.append(messageBuffer);
+    }
 }
 
 void PositionSender::setRate(int rateHz)
@@ -45,17 +65,10 @@ void PositionSender::stop()
 
 void PositionSender::sendPosition()
 {
-    ::capnp::MallocMessageBuilder message;
-    L3::Position::Builder position = message.initRoot<L3::Position>();
-    position .setHeading(qrand() % 10); // booogus values
-    position.setElevation(qrand() % 100);
-    position.setLatitude(qrand() % 100);
-    position.setLongitude(qrand() % 100);
-    position.setHeightAboveEllipsoid(qrand() % 100);
+    static QList<QByteArray>::Iterator bufIter = m_positionBuffers.begin();
+    QByteArray& messageBuffer = *(bufIter++);
+    if(bufIter == m_positionBuffers.end()) bufIter = m_positionBuffers.begin();
 
-    WordArray array = ::capnp::messageToFlatArray(message);
-    ArrayPtr<unsigned char> messageBytes(array.asBytes());
-    QByteArray messageBuffer((const char*)messageBytes.begin(), messageBytes.size());
     qint64 bytesSent = m_socket->writeDatagram(messageBuffer, m_dest, m_destPort);
     if (bytesSent < 0)
     {

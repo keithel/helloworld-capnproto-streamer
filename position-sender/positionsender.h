@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QHostAddress>
+#include <QList>
+#include <QByteArray>
 
 class QUdpSocket;
 class QTimer;
@@ -21,12 +23,16 @@ public slots:
     void sendPosition();
 
 private:
+    void initPositions();
+
     int m_delayMsec;
     QHostAddress m_dest;
     quint16 m_destPort;
 
     QUdpSocket* m_socket;
     QTimer* m_sendTimer;
+
+    QList<QByteArray> m_positionBuffers;
 };
 
 #endif // POSITIONSENDER_H

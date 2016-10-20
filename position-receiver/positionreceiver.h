@@ -5,24 +5,9 @@
 #include <QContiguousCache>
 #include <QTimer>
 #include <QHostAddress>
+#include "myposition.h"
 
 class QUdpSocket;
-
-class MyPosition {
-public:
-    MyPosition(float heading, float elevation, float latitude, float longitude, float heightAboveEllipsoid)
-        : m_heading(heading), m_elevation(elevation),
-          m_latitude(latitude), m_longitude(longitude),
-          m_heightAboveEllipsoid(heightAboveEllipsoid)
-    {}
-
-public:
-    float m_heading;
-    float m_elevation;
-    float m_latitude;
-    float m_longitude;
-    float m_heightAboveEllipsoid;
-};
 
 class PositionReceiver : public QObject
 {
@@ -42,6 +27,7 @@ public slots:
 
 private:
     void receivePositions();
+    void inspectPosition(MyPosition& pos);
 
 private:
     unsigned int m_nPerSecCounter;

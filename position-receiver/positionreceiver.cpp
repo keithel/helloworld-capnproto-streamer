@@ -104,10 +104,34 @@ void PositionReceiver::receivePositions()
         QtConcurrent::run([=] {
             ::capnp::FlatArrayMessageReader reader(::kj::ArrayPtr<const word>((const word*)buffer.data(), buffer.size()));
             L3::Position::Reader pos = reader.getRoot<L3::Position>();
-            m_positionCache.append(MyPosition(pos.getHeading(), pos.getElevation(),
-                                              pos.getLatitude(), pos.getLongitude(),
-                                              pos.getHeightAboveEllipsoid()));
+
+            MyPosition myPos(pos.getHeading(), pos.getElevation(),
+                           pos.getLatitude(), pos.getLongitude(),
+                           pos.getHeightAboveEllipsoid());
+            inspectPosition(myPos);
+            m_positionCache.append(myPos);
         });
         m_nPerSecCounter++;
+    }
+}
+
+void PositionReceiver::inspectPosition(MyPosition &pos)
+{
+    // Don't bother inspecting the first one.
+    // We can't know which of the two we'll first receive.
+    if (m_positionCache.isEmpty())
+        return;
+
+    MyPosition expectedPos = m_positionCache.last();
+    int nextPosAheadBehind = (qFuzzyCompare(expectedPos.m_heading, 44.0f)) ? 1 : -1;
+    expectedPos.m_heading = expectedPos.m_heading + (nextPosAheadBehind * 11);
+    expectedPos.m_elevation = expectedPos.m_elevation + (nextPosAheadBehind * 11);
+    expectedPos.m_latitude = expectedPos.m_latitude + (nextPosAheadBehind * 11);
+    expectedPos.m_longitude = expectedPos.m_longitude + (nextPosAheadBehind * 11);
+    expectedPos.m_heightAboveEllipsoid = expectedPos.m_heightAboveEllipsoid + (nextPosAheadBehind * 11);
+
+    if (pos != expectedPos)
+    {
+        qWarning() << qPrintable("Received pos doesn't match expected. received:") << pos << qPrintable("expected:") << expectedPos;
     }
 }

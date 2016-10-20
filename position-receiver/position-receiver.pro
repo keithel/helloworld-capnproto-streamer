@@ -13,10 +13,12 @@ TARGET = position-receiver
 include(../position-streamer.pri)
 
 HEADERS += \
-    positionreceiver.h
+    positionreceiver.h \
+    myposition.h
 
 SOURCES += main.cpp \
-    positionreceiver.cpp
+    positionreceiver.cpp \
+    myposition.cpp
 
 !nogui:qtHaveModule(gui) {
     RESOURCES += qml.qrc
