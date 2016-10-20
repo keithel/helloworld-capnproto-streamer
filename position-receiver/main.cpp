@@ -5,7 +5,7 @@
 #include <QCoreApplication>
 #endif
 
-#include "quaternionsocket.h"
+#include "positionreceiver.h"
 #include <QHostAddress>
 #include <QTextStream>
 #include <stdio.h>
@@ -30,7 +30,7 @@ QChar printTicker()
 void printRate(unsigned int rateHz)
 {
     QTextStream out(stdout, QIODevice::WriteOnly);
-    out << "\r" % printTicker() % " " % QString::number(rateHz) % " quaternions/sec  \b\b";
+    out << "\r" % printTicker() % " " % QString::number(rateHz) % " position updates/sec  \b\b";
     out.flush();
     nRatesPrinted++;
 }
@@ -47,9 +47,9 @@ int main(int argc, char *argv[])
     QCoreApplication app(argc, argv);
 #endif
 
-    QuaternionSocket mySocket(&app);
+    PositionReceiver mySocket(&app);
     mySocket.bind(QHostAddress::AnyIPv4, 11212, QHostAddress("233.253.12.1"));
-    app.connect(&mySocket, &QuaternionSocket::rateChanged, printRate);
+    app.connect(&mySocket, &PositionReceiver::rateChanged, printRate);
 
     return app.exec();
 }

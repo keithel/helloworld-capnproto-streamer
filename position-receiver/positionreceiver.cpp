@@ -1,28 +1,28 @@
-#include "quaternionsocket.h"
+#include "positionreceiver.h"
 #include <QUdpSocket>
 #include <capnp/message.h>
 #include <capnp/serialize.h>
-#include "quaternion.capnp.h"
+#include "position.capnp.h"
 #include <QtConcurrent/QtConcurrent>
 
 using ::capnp::word;
 
-QuaternionSocket::QuaternionSocket(QObject* parent)
+PositionReceiver::PositionReceiver(QObject* parent)
     : QObject(parent)
     , m_nPerSecCounter(0)
     , m_lastNPerSec(0)
     , m_socket(new QUdpSocket(this))
     , m_perSecTimer(new QTimer(this))
-    , m_qcache(500)
+    , m_positionCache(500)
 {
 }
 
-QuaternionSocket::~QuaternionSocket()
+PositionReceiver::~PositionReceiver()
 {
     close();
 }
 
-bool QuaternionSocket::bind(QHostAddress address, quint16 port, QHostAddress multicastGroup)
+bool PositionReceiver::bind(QHostAddress address, quint16 port, QHostAddress multicastGroup)
 {
     if (address.isNull())
         return false;
@@ -48,15 +48,15 @@ bool QuaternionSocket::bind(QHostAddress address, quint16 port, QHostAddress mul
 
     if (!m_perSecTimer->isActive())
     {
-        connect(m_socket, &QUdpSocket::readyRead, this, &QuaternionSocket::receiveQuaternions);
-        connect(m_perSecTimer, &QTimer::timeout, this, &QuaternionSocket::updateRate);
+        connect(m_socket, &QUdpSocket::readyRead, this, &PositionReceiver::receivePositions);
+        connect(m_perSecTimer, &QTimer::timeout, this, &PositionReceiver::updateRate);
         m_perSecTimer->start(1000);
     }
 
     return true;
 }
 
-void QuaternionSocket::close()
+void PositionReceiver::close()
 {
     if (!m_multicastGroup.isNull())
     {
@@ -77,12 +77,12 @@ void QuaternionSocket::close()
     if (m_perSecTimer->isActive())
     {
         m_perSecTimer->stop();
-        disconnect(m_perSecTimer, &QTimer::timeout, this, &QuaternionSocket::updateRate);
-        disconnect(m_socket, &QUdpSocket::readyRead, this, &QuaternionSocket::receiveQuaternions);
+        disconnect(m_perSecTimer, &QTimer::timeout, this, &PositionReceiver::updateRate);
+        disconnect(m_socket, &QUdpSocket::readyRead, this, &PositionReceiver::receivePositions);
     }
 }
 
-void QuaternionSocket::updateRate()
+void PositionReceiver::updateRate()
 {
     if (m_nPerSecCounter != m_lastNPerSec)
     {
@@ -92,7 +92,7 @@ void QuaternionSocket::updateRate()
     m_nPerSecCounter = 0;
 }
 
-void QuaternionSocket::receiveQuaternions()
+void PositionReceiver::receivePositions()
 {
     while(m_socket->pendingDatagramSize() > 0)
     {
@@ -101,13 +101,12 @@ void QuaternionSocket::receiveQuaternions()
         QByteArray buffer(m_socket->pendingDatagramSize(), (char)0);
         m_socket->readDatagram(buffer.data(), buffer.size());
 
-        //::capnp::PackedFdMessageReader message(m_socket->socketDescriptor());
-        //L3::Quaternion::Reader q = message.getRoot<L3::Quaternion>();
-
         QtConcurrent::run([=] {
             ::capnp::FlatArrayMessageReader reader(::kj::ArrayPtr<const word>((const word*)buffer.data(), buffer.size()));
-            L3::Quaternion::Reader q = reader.getRoot<L3::Quaternion>();
-            m_qcache.append(MyQuaternion(q.getScalar(), q.getXpos(), q.getYpos(), q.getZpos()));
+            L3::Position::Reader pos = reader.getRoot<L3::Position>();
+            m_positionCache.append(MyPosition(pos.getHeading(), pos.getElevation(),
+                                              pos.getLatitude(), pos.getLongitude(),
+                                              pos.getHeightAboveEllipsoid()));
         });
         m_nPerSecCounter++;
     }

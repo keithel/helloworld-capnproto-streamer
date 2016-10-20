@@ -5,12 +5,12 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 TEMPLATE = app
 
-TARGET = quaternion-sender
+TARGET = position-sender
 
-include(../quaternion-streamer.pri)
+include(../position-streamer.pri)
 
 HEADERS += \
-    quaternionsocket.h
+    positionsender.h
 
 SOURCES += main.cpp \
-    quaternionsocket.cpp
+    positionsender.cpp

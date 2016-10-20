@@ -8,15 +8,15 @@ else {
 }
 
 CONFIG += c++11
-TARGET = quaternion-receiver
+TARGET = position-receiver
 
-include(../quaternion-streamer.pri)
+include(../position-streamer.pri)
 
 HEADERS += \
-    quaternionsocket.h
+    positionreceiver.h
 
 SOURCES += main.cpp \
-    quaternionsocket.cpp
+    positionreceiver.cpp
 
 !nogui:qtHaveModule(gui) {
     RESOURCES += qml.qrc

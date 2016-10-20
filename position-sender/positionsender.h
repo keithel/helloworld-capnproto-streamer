@@ -1,5 +1,5 @@
-#ifndef QUATERNIONSOCKET_H
-#define QUATERNIONSOCKET_H
+#ifndef POSITIONSENDER_H
+#define POSITIONSENDER_H
 
 #include <QObject>
 #include <QHostAddress>
@@ -7,18 +7,18 @@
 class QUdpSocket;
 class QTimer;
 
-class QuaternionSocket : public QObject
+class PositionSender : public QObject
 {
 Q_OBJECT
 public:
-    QuaternionSocket(QObject* parent = 0);
+    PositionSender(QObject* parent = 0);
     void setRate(int rateHz);
     void setDestination(QHostAddress dest, quint16 destPort);
 
 public slots:
     void start();
     void stop();
-    void sendQuaternion();
+    void sendPosition();
 
 private:
     int m_delayMsec;
@@ -29,4 +29,4 @@ private:
     QTimer* m_sendTimer;
 };
 
-#endif // QUATERNIONSOCKET_H
+#endif // POSITIONSENDER_H
