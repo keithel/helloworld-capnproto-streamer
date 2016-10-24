@@ -96,8 +96,10 @@ void PositionReceiver::receivePositions()
 {
     while(m_socket->pendingDatagramSize() > 0)
     {
+#if defined(SHOW_HASPENDINGDATAGRAMS_BUG)
         if (!m_socket->hasPendingDatagrams())
             qWarning() << qPrintable("socket->hasPendingDatagrams() false but pendingDatagramSize nonzero (") << m_socket->pendingDatagramSize() << qPrintable(")");
+#endif
         QByteArray buffer(m_socket->pendingDatagramSize(), (char)0);
         m_socket->readDatagram(buffer.data(), buffer.size());
 
