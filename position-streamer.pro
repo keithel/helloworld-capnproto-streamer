@@ -1,5 +1,5 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    position-sender \
+    position-sender-qt \
     position-receiver
