@@ -8,7 +8,7 @@ else {
 }
 
 CONFIG += c++11
-TARGET = position-receiver
+TARGET = position-receiver-qt
 #DEFINES += SHOW_HASPENDINGDATAGRAMS_BUG
 
 include(../position-streamer.pri)

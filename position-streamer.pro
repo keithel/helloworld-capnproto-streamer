@@ -2,4 +2,4 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     position-sender-qt \
-    position-receiver
+    position-receiver-qt
