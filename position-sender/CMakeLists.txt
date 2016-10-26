@@ -1,6 +1,10 @@
 project(position-sender)
 cmake_minimum_required(VERSION 2.8)
 set (CMAKE_CXX_FLAGS "--std=gnu++11 ${CMAKE_CXX_FLAGS}")
+if(NOT DEFINED CapnProto_DIR)
+  message("Setting CapnProto_DIR var to ${CMAKE_CURRENT_SOURCE_DIR}/cmake/CapnProto")
+  set (CapnProto_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake/CapnProto")
+endif()
 
 macro(makeLink src dest)
  add_custom_command(OUTPUT ${dest}
