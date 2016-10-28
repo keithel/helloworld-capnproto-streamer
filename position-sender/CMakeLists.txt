@@ -18,7 +18,7 @@ find_package (CapnProto REQUIRED)
 include_directories(${CAPNP_INCLUDE_DIRS})
 capnp_generate_cpp(CAPNP_SRCS CAPNP_HDRS ${CMAKE_CURRENT_BINARY_DIR}/position.capnp)
 
-aux_source_directory(. SRC_LIST)
+aux_source_directory(./src SRC_LIST)
 include_directories(.. ${CMAKE_CURRENT_BINARY_DIR})
 add_executable(${PROJECT_NAME} ${SRC_LIST} ${CAPNP_HDRS} ${CAPNP_SRCS})
 target_link_libraries (${PROJECT_NAME} ${CAPNP_LIBRARIES_LITE})
