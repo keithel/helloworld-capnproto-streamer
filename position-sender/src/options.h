@@ -14,11 +14,11 @@ public:
     int parseArgs(int argc, char**argv);
     void printHelp();
 
-    inline LogLevel getVerbosity() { return mVerbosity; }
-    inline std::string getRpmsgFile() { return mRpmsgFile; }
-    inline uint32_t getFrequencyDivisor() { return mDivisor; }
-    inline uint32_t getLoopCount() { return mLoopCount; }
-    inline bool isTesting() { return mTesting; }
+    inline LogLevel getVerbosity() const { return mVerbosity; }
+    inline std::string getRpmsgFile() const { return mRpmsgFile; }
+    inline uint32_t getFrequencyDivisor() const { return mDivisor; }
+    inline uint32_t getLoopCount() const { return mLoopCount; }
+    inline bool isTesting() const { return mTesting; }
 
 private:
     struct OptionHelp {
