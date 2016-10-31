@@ -66,14 +66,14 @@ void RpmsgPositionStreamer::streamHeadings()
                 bool logHeading = (printCount++) % (120/m_opts.getFrequencyDivisor()) == 0;
                 if (logHeading)
                 {
-                    dprintf(LogLevel::VERB_DEBUG, "Updated Heading[%02d]\n", (int)i);
-                    dprintf(LogLevel::VERB_DEBUG, "\tHeading   : %f\n", (float)loc.heading);
-                    dprintf(LogLevel::VERB_DEBUG, "\tElevation : %f\n", (float)loc.elevation);
-                    dprintf(LogLevel::VERB_DEBUG, "\tLatitude  : %f\n", (float)loc.lat);
-                    dprintf(LogLevel::VERB_DEBUG, "\tLongitude : %f\n", (float)loc.lon);
-                    dprintf(LogLevel::VERB_DEBUG, "\tHAE       : %f\n", (float)loc.hae);
-                    dprintf(LogLevel::VERB_DEBUG, "\tRoll      : %f\n", (float)loc.roll);
-                    dprintf(LogLevel::VERB_DEBUG, "\tContents %ld bytes", (long)array.asBytes().size());
+                    dprintf(LogLevel::VERB_INFO, "Updated Heading[%02d]\n", (int)i);
+                    dprintf(LogLevel::VERB_INFO, "\tHeading   : %f\n", (float)loc.heading);
+                    dprintf(LogLevel::VERB_INFO, "\tElevation : %f\n", (float)loc.elevation);
+                    dprintf(LogLevel::VERB_INFO, "\tLatitude  : %f\n", (float)loc.lat);
+                    dprintf(LogLevel::VERB_INFO, "\tLongitude : %f\n", (float)loc.lon);
+                    dprintf(LogLevel::VERB_INFO, "\tHAE       : %f\n", (float)loc.hae);
+                    dprintf(LogLevel::VERB_INFO, "\tRoll      : %f\n", (float)loc.roll);
+                    dprintf(LogLevel::VERB_INFO, "\tContents %ld bytes", (long)array.asBytes().size());
                 }
 
                 size_t sentBytes = sendto(m_multicastFd, array.asBytes().begin(), array.asBytes().size(),
@@ -81,7 +81,7 @@ void RpmsgPositionStreamer::streamHeadings()
                 if (sentBytes < 0)
                 {
                     if (logHeading)
-                       dprintf(LogLevel::VERB_DEBUG, "\n\n");
+                       dprintf(LogLevel::VERB_INFO, "\n\n");
                     perror("sendto");
                     exit(1);
                 }
@@ -91,7 +91,7 @@ void RpmsgPositionStreamer::streamHeadings()
                        dprintf(LogLevel::VERB_DEBUG, ", ");
                     dprintf(LogLevel::VERB_DEBUG, "sent %u bytes multicast.\n", (unsigned int)sentBytes);
                     if (logHeading)
-                       dprintf(LogLevel::VERB_DEBUG, "\n");
+                       dprintf(LogLevel::VERB_INFO, "\n");
                 }
             }
         }
@@ -135,7 +135,7 @@ bool RpmsgPositionStreamer::startHeadingUpdates ( int fd, uint32_t divisor )
 {
     bool  retVal  = false;
 
-    dprintf( LogLevel::VERB_DEBUG, "Sending Heading Update Request with Divisor: %u\n", (unsigned int) divisor );
+    dprintf( LogLevel::VERB_INFO, "Sending Heading Update Request with Divisor: %u\n", (unsigned int) divisor );
     retVal = Rpmsg_SendMsgNoAck( fd, eIpcMsg_HeadingRequest, &divisor, sizeof(divisor) ) >= 0 ? true : false;
 
     return ( retVal );
@@ -149,7 +149,7 @@ bool RpmsgPositionStreamer::stopHeadingUpdates ( int fd )
    bool     retVal  = false;
    uint32_t divisor = 0;
 
-   dprintf( LogLevel::VERB_DEBUG, "Sending Heading Update Request with Divisor: %u\n", (unsigned int) divisor );
+   dprintf( LogLevel::VERB_INFO, "Sending Heading Update Request with Divisor: %u\n", (unsigned int) divisor );
    retVal = Rpmsg_SendMsgNoAck( fd, eIpcMsg_HeadingRequest, &divisor, sizeof(divisor) ) >= 0 ? true : false;
 
    return ( retVal );
@@ -163,7 +163,7 @@ bool RpmsgPositionStreamer::getLatestHeading( int fd, AhrsOwnInfo * heading )
    /* Grab the first available heading */
    retval = Rpmsg_RecvMsg( fd, heading, sizeof(AhrsOwnInfo));
    if (retval < 0)
-      dprintf(LogLevel::VERB_DEBUG, "getLatestHeading recvMsg failed %d\n", retval);
+      dprintf(LogLevel::VERB_INFO, "getLatestHeading recvMsg failed %d\n", retval);
 
    /**
     * If we are recieiving good headings and there are more available,
@@ -176,7 +176,7 @@ bool RpmsgPositionStreamer::getLatestHeading( int fd, AhrsOwnInfo * heading )
    {
       retval  =  Rpmsg_RecvMsg( fd, heading, sizeof(AhrsOwnInfo));
       if (retval < 0)
-          dprintf(LogLevel::VERB_DEBUG, "getLatestHeading recvMsg failed %d\n", retval);
+          dprintf(LogLevel::VERB_INFO, "getLatestHeading recvMsg failed %d\n", retval);
       bytesAv = 0;
    }
 

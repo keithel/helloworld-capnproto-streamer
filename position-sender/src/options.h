@@ -4,7 +4,7 @@
 #include <string>
 #include <getopt.h>
 
-enum class LogLevel{ VERB_ERROR = 0, VERB_WARN, VERB_DEBUG};
+enum class LogLevel{ VERB_ERROR = 0, VERB_WARN, VERB_INFO, VERB_DEBUG};
 
 class Options
 {
