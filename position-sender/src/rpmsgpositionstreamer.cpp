@@ -63,7 +63,8 @@ void RpmsgPositionStreamer::streamHeadings()
                 //s_positionBuffers.push_back(vector<unsigned char>(array.asBytes().begin(), array.asBytes().end()));
 
                 static int printCount = 0;
-                if ((printCount++) % (120/m_opts.getFrequencyDivisor()) == 0)
+                bool logHeading = (printCount++) % (120/m_opts.getFrequencyDivisor()) == 0;
+                if (logHeading)
                 {
                     dprintf(LogLevel::VERB_DEBUG, "Updated Heading[%02d]\n", (int)i);
                     dprintf(LogLevel::VERB_DEBUG, "\tHeading   : %f\n", (float)loc.heading);
@@ -72,14 +73,25 @@ void RpmsgPositionStreamer::streamHeadings()
                     dprintf(LogLevel::VERB_DEBUG, "\tLongitude : %f\n", (float)loc.lon);
                     dprintf(LogLevel::VERB_DEBUG, "\tHAE       : %f\n", (float)loc.hae);
                     dprintf(LogLevel::VERB_DEBUG, "\tRoll      : %f\n", (float)loc.roll);
-                    dprintf(LogLevel::VERB_DEBUG, "\t%ld bytes\n\n", (long)array.asBytes().size());
+                    dprintf(LogLevel::VERB_DEBUG, "\tContents %ld bytes", (long)array.asBytes().size());
                 }
 
-                if (sendto(m_multicastFd, array.asBytes().begin(), array.asBytes().size(),
-                           0, (struct sockaddr*)&m_multicastAddr, sizeof(m_multicastAddr)) < 0)
+                size_t sentBytes = sendto(m_multicastFd, array.asBytes().begin(), array.asBytes().size(),
+                                          0, (struct sockaddr*)&m_multicastAddr, sizeof(m_multicastAddr));
+                if (sentBytes < 0)
                 {
+                    if (logHeading)
+                       dprintf(LogLevel::VERB_DEBUG, "\n\n");
                     perror("sendto");
                     exit(1);
+                }
+                else
+                {
+                    if (logHeading)
+                       dprintf(LogLevel::VERB_DEBUG, ", ");
+                    dprintf(LogLevel::VERB_DEBUG, "sent %u bytes multicast.\n", (unsigned int)sentBytes);
+                    if (logHeading)
+                       dprintf(LogLevel::VERB_DEBUG, "\n");
                 }
             }
         }
