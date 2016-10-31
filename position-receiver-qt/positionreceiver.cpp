@@ -109,7 +109,7 @@ void PositionReceiver::receivePositions()
 
             MyPosition myPos(pos.getHeading(), pos.getElevation(),
                            pos.getLatitude(), pos.getLongitude(),
-                           pos.getHeightAboveEllipsoid());
+                           pos.getHeightAboveEllipsoid(), pos.getRoll());
             inspectPosition(myPos);
             m_positionCache.append(myPos);
         });
@@ -131,6 +131,7 @@ void PositionReceiver::inspectPosition(MyPosition &pos)
     expectedPos.m_latitude = expectedPos.m_latitude + (nextPosAheadBehind * 11);
     expectedPos.m_longitude = expectedPos.m_longitude + (nextPosAheadBehind * 11);
     expectedPos.m_heightAboveEllipsoid = expectedPos.m_heightAboveEllipsoid + (nextPosAheadBehind * 11);
+    expectedPos.m_roll = expectedPos.m_roll + (nextPosAheadBehind * 11);
 
     if (pos != expectedPos)
     {

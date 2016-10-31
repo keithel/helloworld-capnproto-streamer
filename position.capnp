@@ -10,4 +10,5 @@ struct Position
     latitude             @2: Float32; # Latitude in WGS-84 degrees.
     longitude            @3: Float32; # Longitude in WGS-84 degrees.
     heightAboveEllipsoid @4: Float32; # Height Above WGS-84 Ellipsoid in meters.
+    roll                 @5: Float32; # Roll in radians (-pi/2 to pi/2).
 }

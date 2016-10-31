@@ -58,6 +58,7 @@ void RpmsgPositionStreamer::streamHeadings()
                 m_position.setLatitude(loc.lat);
                 m_position.setLongitude(loc.lon);
                 m_position.setHeightAboveEllipsoid(loc.hae);
+                m_position.setRoll(loc.roll);
                 WordArray array;
                 array = ::capnp::messageToFlatArray(m_message);
                 //s_positionBuffers.push_back(vector<unsigned char>(array.asBytes().begin(), array.asBytes().end()));

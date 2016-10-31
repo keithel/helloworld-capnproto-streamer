@@ -10,13 +10,16 @@ bool MyPosition::operator !=(const MyPosition &pos)
     if (m_latitude != pos.m_latitude) return true;
     if (m_longitude != pos.m_longitude) return true;
     if (m_heightAboveEllipsoid != pos.m_heightAboveEllipsoid) return true;
+    if (m_roll != pos.m_roll) return true;
     return false;
 }
 
 std::string MyPosition::toStdString()
 {
     std::ostringstream sstream;
-    sstream << "MyPosition" << '(' << m_heading << ", " << m_elevation << ", " << m_latitude << ", " << m_longitude << ", " << m_heightAboveEllipsoid << ')';
+    sstream << "MyPosition" << '(' << m_heading << ", " << m_elevation << ", "
+            << m_latitude << ", " << m_longitude << ", " << m_heightAboveEllipsoid << ", "
+            << m_roll << ')';
     return sstream.str();
 }
 

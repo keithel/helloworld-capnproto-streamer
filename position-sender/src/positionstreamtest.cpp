@@ -35,6 +35,7 @@ void PositionStreamTest::initPositions()
         position.setLatitude(88 + i);
         position.setLongitude(0 + i);
         position.setHeightAboveEllipsoid(22 + i);
+        position.setRoll(44 + i);
 
         WordArray array;
         array = ::capnp::messageToFlatArray(message);
