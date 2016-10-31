@@ -16,6 +16,7 @@ public:
 
     inline LogLevel getVerbosity() const { return mVerbosity; }
     inline std::string getRpmsgFile() const { return mRpmsgFile; }
+    inline std::string getDestAddr() const { return mDestIp; }
     inline uint32_t getFrequencyDivisor() const { return mDivisor; }
     inline uint32_t getLoopCount() const { return mLoopCount; }
     inline bool isTesting() const { return mTesting; }
@@ -34,6 +35,7 @@ private:
 
     LogLevel    mVerbosity;
     std::string mRpmsgFile;
+    std::string mDestIp;
     uint32_t    mDivisor;
     uint32_t    mLoopCount;
     bool mTesting;

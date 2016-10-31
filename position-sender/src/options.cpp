@@ -4,6 +4,7 @@
 const struct option Options::sGetOpts[] = {
     { "verbose", required_argument, NULL, 'v' },
     { "file", required_argument, NULL, 'f' },
+    { "destaddr", required_argument, NULL, 'a' },
     { "divisor", required_argument, NULL, 'd' },
     { "count", required_argument, NULL, 'c' },
     { "testing", no_argument, NULL, 't' },
@@ -14,6 +15,7 @@ const struct option Options::sGetOpts[] = {
 const Options::OptionHelp Options::sGetOptsHelp[] = {
     { "<verbose>", "Set verbosity level" },
     { "<file>", "The RPMSG file" },
+    { "<IP address>", "The destination IP address for which to send readings" },
     { "<divisor>", "The divisor for update rates" },
     { "<count>", "The number of times to read heading" },
     { "", "Put this in testing mode sending out predictable alternating test positions" },
@@ -25,13 +27,13 @@ Options::Options()
     : mArgc(0)
     , mArgv(nullptr)
     , mVerbosity(LogLevel::VERB_ERROR)
+    , mDestIp("233.253.12.1")
     , mDivisor(120)
     , mLoopCount(100)
     , mTesting(false)
 {
 }
 
-#define DESCLEN 36
 void Options::printHelp()
 {
     int i;
@@ -67,7 +69,7 @@ int Options::parseArgs(int argc, char** argv)
     int c;
     while (1) {
         int option_index = 0;
-        c = getopt_long(mArgc, mArgv, "v:f:d:c:th",
+        c = getopt_long(mArgc, mArgv, "v:f:a:d:c:th",
                         sGetOpts, &option_index);
         if (c == -1)
             break;
@@ -80,6 +82,11 @@ int Options::parseArgs(int argc, char** argv)
 
         case 'f':
             mRpmsgFile = optarg;
+            break;
+
+        case 'a':
+            mDestIp = optarg;
+            // TODO: Validate IP address.
             break;
 
         case 'd':

@@ -15,7 +15,6 @@
 #include "rpmsgpositionstreamer.h"
 
 #define PORT 11212
-#define GROUP_IP "233.253.12.1"
 
 static Options s_opts;
 
@@ -30,7 +29,7 @@ int initMulticastSocket(struct sockaddr_in& addr, int& fd)
     // set up destination address to the multicast group
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = inet_addr(GROUP_IP);
+    addr.sin_addr.s_addr = inet_addr(s_opts.getDestAddr().c_str());
     addr.sin_port = htons(PORT);
 }
 
