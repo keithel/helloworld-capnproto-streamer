@@ -63,7 +63,7 @@ void RpmsgPositionStreamer::streamHeadings()
                 //s_positionBuffers.push_back(vector<unsigned char>(array.asBytes().begin(), array.asBytes().end()));
 
                 static int printCount = 0;
-                if ((printCount++) % m_opts.getFrequencyDivisor() == 0)
+                if ((printCount++) % (120/m_opts.getFrequencyDivisor()) == 0)
                 {
                     dprintf(LogLevel::VERB_DEBUG, "Updated Heading[%02d]\n", (int)i);
                     dprintf(LogLevel::VERB_DEBUG, "\tHeading   : %f\n", (float)loc.heading);
@@ -146,10 +146,12 @@ bool RpmsgPositionStreamer::stopHeadingUpdates ( int fd )
 bool RpmsgPositionStreamer::getLatestHeading( int fd, AhrsOwnInfo * heading )
 {
    int bytesAv = 0;
-   bool retval  = false;
+   int retval  = 0;
 
-   /* Grab the first available hading */
+   /* Grab the first available heading */
    retval = Rpmsg_RecvMsg( fd, heading, sizeof(AhrsOwnInfo));
+   if (retval < 0)
+      dprintf(LogLevel::VERB_DEBUG, "getLatestHeading recvMsg failed %d\n", retval);
 
    /**
     * If we are recieiving good headings and there are more available,
@@ -161,6 +163,8 @@ bool RpmsgPositionStreamer::getLatestHeading( int fd, AhrsOwnInfo * heading )
           ( bytesAv >= sizeof(AhrsOwnInfo) ) )
    {
       retval  =  Rpmsg_RecvMsg( fd, heading, sizeof(AhrsOwnInfo));
+      if (retval < 0)
+          dprintf(LogLevel::VERB_DEBUG, "getLatestHeading recvMsg failed %d\n", retval);
       bytesAv = 0;
    }
 
