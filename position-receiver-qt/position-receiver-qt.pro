@@ -14,17 +14,17 @@ TARGET = position-receiver-qt
 include(../position-streamer.pri)
 
 HEADERS += \
-    positionreceiver.h \
-    myposition.h \
-    options.h
+    src/positionreceiver.h \
+    src/myposition.h \
+    src/options.h
 
-SOURCES += main.cpp \
-    positionreceiver.cpp \
-    myposition.cpp \
-    options.cpp
+SOURCES += src/main.cpp \
+    src/positionreceiver.cpp \
+    src/myposition.cpp \
+    src/options.cpp
 
 !nogui:qtHaveModule(gui) {
-    RESOURCES += qml.qrc
+    RESOURCES += qml/qml.qrc
 
     # Additional import path used to resolve QML modules in Qt Creator's code model
     QML_IMPORT_PATH =
