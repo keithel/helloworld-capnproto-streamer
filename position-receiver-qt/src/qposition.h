@@ -1,10 +1,11 @@
-#ifndef MYPOSITION_H
-#define MYPOSITION_H
+#ifndef QPOSITION_H
+#define QPOSITION_H
 
 #include <QDebug>
 #include <string>
+#include "position.h"
 
-class MyPosition : public QObject {
+class QPosition : public QObject {
     Q_OBJECT
     Q_PROPERTY(float heading READ heading WRITE setHeading NOTIFY headingChanged);
     Q_PROPERTY(float elevation READ elevation WRITE setElevation NOTIFY elevationChanged);
@@ -14,30 +15,25 @@ class MyPosition : public QObject {
     Q_PROPERTY(float roll READ roll WRITE setRoll NOTIFY rollChanged);
 
 public:
-    MyPosition(float heading, float elevation, float latitude, float longitude, float heightAboveEllipsoid, float roll)
-        : m_heading(heading), m_elevation(elevation),
-          m_latitude(latitude), m_longitude(longitude),
-          m_heightAboveEllipsoid(heightAboveEllipsoid),
-          m_roll(roll)
+    QPosition(QObject* parent = 0, const Position& pos = Position())
+        : QObject(parent)
+        , m_position(pos)
     {}
 
-    void copyPosition(const MyPosition& pos);
+    void setPosition(const Position& pos);
 
-    float heading() const { return m_heading; }
+    float heading() const { return m_position.heading; }
     void setHeading(float heading);
-    float elevation() const { return m_elevation; }
+    float elevation() const { return m_position.elevation; }
     void setElevation(float elevation);
-    float latitude() const { return m_latitude; }
+    float latitude() const { return m_position.latitude; }
     void setLatitude(float latitude);
-    float longitude() const { return m_longitude; }
+    float longitude() const { return m_position.longitude; }
     void setLongitude(float longitude);
-    float heightAboveEllipsoid() const { return m_heightAboveEllipsoid; }
+    float heightAboveEllipsoid() const { return m_position.heightAboveEllipsoid; }
     void setHeightAboveEllipsoid(float heightAboveEllipsoid);
-    float roll() const { return m_roll; }
+    float roll() const { return m_position.roll; }
     void setRoll(float roll);
-
-    bool operator !=(const MyPosition& pos) const;
-    std::string toStdString() const;
 
 signals:
     void headingChanged();
@@ -49,14 +45,7 @@ signals:
 
 
 private:
-    float m_heading;
-    float m_elevation;
-    float m_latitude;
-    float m_longitude;
-    float m_heightAboveEllipsoid;
-    float m_roll;
+    Position m_position;
 };
 
-QDebug operator <<(QDebug qdebug, const MyPosition& pos);
-
-#endif // MYPOSITION_H
+#endif // QPOSITION_H

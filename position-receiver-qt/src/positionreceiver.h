@@ -5,7 +5,7 @@
 #include <QContiguousCache>
 #include <QTimer>
 #include <QHostAddress>
-#include "myposition.h"
+#include "position.h"
 
 class QUdpSocket;
 
@@ -21,7 +21,7 @@ public:
 
 signals:
     void rateChanged(unsigned int rateHz);
-    void positionReceived(MyPosition* pos);
+    void positionReceived(Position pos);
 
 public slots:
     void close();
@@ -29,7 +29,7 @@ public slots:
 
 private:
     void receivePositions();
-    void inspectPosition(const MyPosition& pos);
+    void inspectPosition(const Position &pos);
 
 private:
     unsigned int m_nPerSecCounter;
@@ -38,7 +38,7 @@ private:
     QHostAddress m_multicastGroup;
     QUdpSocket* m_socket;
     QTimer* m_perSecTimer;
-    QContiguousCache<MyPosition*> m_positionCache;
+    QContiguousCache<Position> m_positionCache;
     bool m_testing;
 };
 

@@ -12,6 +12,7 @@
 #include <QTextStream>
 #include <stdio.h>
 #include <QStringBuilder>
+#include "qposition.h"
 
 static Options s_opts;
 
@@ -39,7 +40,7 @@ void printRate(unsigned int rateHz)
     nRatesPrinted++;
 }
 
-MyPosition s_pos(0.0f,0.0f,0.0f,0.0f,0.0f,0.0f);
+QPosition s_pos;
 
 int main(int argc, char *argv[])
 {
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
     PositionReceiver mySocket(&app, s_opts.isTesting());
     mySocket.bind(QHostAddress::AnyIPv4, 11212, QHostAddress("233.253.12.1"));
     app.connect(&mySocket, &PositionReceiver::rateChanged, printRate);
-    app.connect(&mySocket, &PositionReceiver::positionReceived, [](MyPosition* newPos){s_pos.copyPosition(*newPos); delete newPos;});
+    app.connect(&mySocket, &PositionReceiver::positionReceived, [](Position newPos){ s_pos.setPosition(newPos); });
 
     return app.exec();
 }
