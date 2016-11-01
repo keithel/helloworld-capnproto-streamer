@@ -13,13 +13,15 @@ class PositionReceiver : public QObject
 {
 Q_OBJECT
 public:
-    PositionReceiver(QObject* parent = 0);
+    PositionReceiver(QObject* parent = 0, bool enableTesting = false);
     virtual ~PositionReceiver();
 
     bool bind(QHostAddress address, quint16 port, QHostAddress multicastGroup = QHostAddress());
+    inline void setTesting(bool testing) { m_testing = testing; }
 
 signals:
     void rateChanged(unsigned int rateHz);
+    void positionReceived(MyPosition* pos);
 
 public slots:
     void close();
@@ -27,7 +29,7 @@ public slots:
 
 private:
     void receivePositions();
-    void inspectPosition(MyPosition& pos);
+    void inspectPosition(const MyPosition& pos);
 
 private:
     unsigned int m_nPerSecCounter;
@@ -36,7 +38,8 @@ private:
     QHostAddress m_multicastGroup;
     QUdpSocket* m_socket;
     QTimer* m_perSecTimer;
-    QContiguousCache<MyPosition> m_positionCache;
+    QContiguousCache<MyPosition*> m_positionCache;
+    bool m_testing;
 };
 
 #endif // POSITIONRECEIVER_H

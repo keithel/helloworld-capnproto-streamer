@@ -7,13 +7,14 @@
 
 using ::capnp::word;
 
-PositionReceiver::PositionReceiver(QObject* parent)
+PositionReceiver::PositionReceiver(QObject* parent, bool enableTesting)
     : QObject(parent)
     , m_nPerSecCounter(0)
     , m_lastNPerSec(0)
     , m_socket(new QUdpSocket(this))
     , m_perSecTimer(new QTimer(this))
     , m_positionCache(500)
+    , m_testing(enableTesting)
 {
 }
 
@@ -107,34 +108,36 @@ void PositionReceiver::receivePositions()
             ::capnp::FlatArrayMessageReader reader(::kj::ArrayPtr<const word>((const word*)buffer.data(), buffer.size()));
             L3::Position::Reader pos = reader.getRoot<L3::Position>();
 
-            MyPosition myPos(pos.getHeading(), pos.getElevation(),
+            MyPosition* myPos = new MyPosition(pos.getHeading(), pos.getElevation(),
                            pos.getLatitude(), pos.getLongitude(),
                            pos.getHeightAboveEllipsoid(), pos.getRoll());
-            inspectPosition(myPos);
+            if (m_testing)
+                inspectPosition(*myPos);
             m_positionCache.append(myPos);
+            emit positionReceived(new MyPosition(myPos->heading(), myPos->elevation(), myPos->latitude(), myPos->longitude(), myPos->heightAboveEllipsoid(), myPos->roll()));
         });
         m_nPerSecCounter++;
     }
 }
 
-void PositionReceiver::inspectPosition(MyPosition &pos)
+void PositionReceiver::inspectPosition(const MyPosition &pos)
 {
     // Don't bother inspecting the first one.
     // We can't know which of the two we'll first receive.
     if (m_positionCache.isEmpty())
         return;
 
-    MyPosition expectedPos = m_positionCache.last();
-    int nextPosAheadBehind = (qFuzzyCompare(expectedPos.m_heading, 44.0f)) ? 1 : -1;
-    expectedPos.m_heading = expectedPos.m_heading + (nextPosAheadBehind * 11);
-    expectedPos.m_elevation = expectedPos.m_elevation + (nextPosAheadBehind * 11);
-    expectedPos.m_latitude = expectedPos.m_latitude + (nextPosAheadBehind * 11);
-    expectedPos.m_longitude = expectedPos.m_longitude + (nextPosAheadBehind * 11);
-    expectedPos.m_heightAboveEllipsoid = expectedPos.m_heightAboveEllipsoid + (nextPosAheadBehind * 11);
-    expectedPos.m_roll = expectedPos.m_roll + (nextPosAheadBehind * 11);
+    MyPosition* expectedPos = m_positionCache.last();
+    int nextPosAheadBehind = (qFuzzyCompare(expectedPos->heading(), 44.0f)) ? 1 : -1;
+    expectedPos->setHeading(expectedPos->heading() + (nextPosAheadBehind * 11));
+    expectedPos->setElevation(expectedPos->elevation() + (nextPosAheadBehind * 11));
+    expectedPos->setLatitude(expectedPos->latitude() + (nextPosAheadBehind * 11));
+    expectedPos->setLongitude(expectedPos->longitude() + (nextPosAheadBehind * 11));
+    expectedPos->setHeightAboveEllipsoid(expectedPos->heightAboveEllipsoid() + (nextPosAheadBehind * 11));
+    expectedPos->setRoll(expectedPos->roll() + (nextPosAheadBehind * 11));
 
-    if (pos != expectedPos)
+    if (pos != *expectedPos)
     {
-        qWarning() << qPrintable("Received pos doesn't match expected. received:") << pos << qPrintable("expected:") << expectedPos;
+        qWarning() << qPrintable("Received pos doesn't match expected. received:") << pos << qPrintable("expected:") << *expectedPos;
     }
 }
