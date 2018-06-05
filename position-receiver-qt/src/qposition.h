@@ -7,6 +7,7 @@
 
 class QPosition : public QObject {
     Q_OBJECT
+    Q_PROPERTY(float headingDegrees READ headingDegrees WRITE setHeadingDegrees NOTIFY headingChanged);
     Q_PROPERTY(float heading READ heading WRITE setHeading NOTIFY headingChanged);
     Q_PROPERTY(float elevation READ elevation WRITE setElevation NOTIFY elevationChanged);
     Q_PROPERTY(float latitude READ latitude WRITE setLatitude NOTIFY latitudeChanged);
@@ -22,17 +23,19 @@ public:
 
     void setPosition(const Position& pos);
 
-    float heading() const { return m_position.heading; }
+    float headingDegrees() const;
+    void setHeadingDegrees(float headingDegrees);
+    inline float heading() const { return m_position.heading; }
     void setHeading(float heading);
-    float elevation() const { return m_position.elevation; }
+    inline float elevation() const { return m_position.elevation; }
     void setElevation(float elevation);
-    float latitude() const { return m_position.latitude; }
+    inline float latitude() const { return m_position.latitude; }
     void setLatitude(float latitude);
-    float longitude() const { return m_position.longitude; }
+    inline float longitude() const { return m_position.longitude; }
     void setLongitude(float longitude);
-    float heightAboveEllipsoid() const { return m_position.heightAboveEllipsoid; }
+    inline float heightAboveEllipsoid() const { return m_position.heightAboveEllipsoid; }
     void setHeightAboveEllipsoid(float heightAboveEllipsoid);
-    float roll() const { return m_position.roll; }
+    inline float roll() const { return m_position.roll; }
     void setRoll(float roll);
 
 signals:

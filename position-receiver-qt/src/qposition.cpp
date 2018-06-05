@@ -1,4 +1,5 @@
 #include "qposition.h"
+#include <QtMath>
 
 void QPosition::setPosition(const Position &pos)
 {
@@ -8,6 +9,16 @@ void QPosition::setPosition(const Position &pos)
     setLongitude(pos.longitude);
     setHeightAboveEllipsoid(pos.heightAboveEllipsoid);
     setRoll(pos.roll);
+}
+
+float QPosition::headingDegrees() const
+{
+    return qRadiansToDegrees(m_position.heading);
+}
+void QPosition::setHeadingDegrees(float headingDegrees)
+{
+    m_position.heading = qDegreesToRadians(headingDegrees);
+    emit headingChanged();
 }
 
 void QPosition::setHeading(float heading)
